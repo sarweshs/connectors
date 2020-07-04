@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import org.serviceinterface.IDataStore;
+import org.serviceinterface.IBucketDataStore;
 
 import com.google.api.gax.paging.Page;
 import com.google.auth.Credentials;
@@ -20,7 +20,7 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
-public class GCSDataStore implements IDataStore {
+public class GCSDataStore implements IBucketDataStore {
 
 	private Storage storage;
 

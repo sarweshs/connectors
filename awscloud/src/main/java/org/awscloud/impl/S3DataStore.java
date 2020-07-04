@@ -3,7 +3,7 @@ package org.awscloud.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.serviceinterface.IDataStore;
+import org.serviceinterface.IBucketDataStore;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -12,7 +12,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-public class S3DataStore implements IDataStore {
+public class S3DataStore implements IBucketDataStore {
 	AmazonS3 s3Client = null;
 	
 	private String bucketName;

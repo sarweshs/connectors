@@ -1,6 +1,6 @@
 package org.serviceinterface;
 
-public interface IDataStore {
+public interface IBucketDataStore {
 	
 	public void storeData(String bucketName, String key, Object obj);
 	

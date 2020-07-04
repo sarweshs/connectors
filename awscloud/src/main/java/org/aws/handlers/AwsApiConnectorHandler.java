@@ -6,7 +6,7 @@ import org.awscloud.impl.AwsKmsDataCipher;
 import org.awscloud.impl.S3DataStore;
 import org.core.api.reader.ApiDataReader;
 import org.serviceinterface.IDataCipher;
-import org.serviceinterface.IDataStore;
+import org.serviceinterface.IBucketDataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +21,13 @@ import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
 import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
 import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
 
-public class SQSHandler implements RequestHandler<SQSEvent, String> {
+public class AwsApiConnectorHandler implements RequestHandler<SQSEvent, String> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SQSHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(AwsApiConnectorHandler.class);
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
 
-	public SQSHandler() {
+	public AwsApiConnectorHandler() {
 		CompletableFuture<GetAccountSettingsResponse> accountSettings = lambdaClient
 				.getAccountSettings(GetAccountSettingsRequest.builder().build());
 		try {
@@ -50,7 +50,7 @@ public class SQSHandler implements RequestHandler<SQSEvent, String> {
 		logger.info("EVENT: {}", gson.toJson(event));
 		System.out.println("SQS source:");
 		String s3Store = System.getenv("test_intermediate_store");
-		IDataStore dataStore = new S3DataStore(s3Store);
+		IBucketDataStore dataStore = new S3DataStore(s3Store);
 
 		String keyArn = System.getenv("data_encryption_key");// "arn:aws:kms:us-east-1:254359228911:key/3408b345-87d2-4a66-b988-1225a415a419"
 		IDataCipher dataCipher = new AwsKmsDataCipher(keyArn);

@@ -13,11 +13,9 @@
 	<name>gcpcloud</name>
 	<url>http://maven.apache.org</url>
 	<properties>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<google-cloud-storage.version>1.16.0</google-cloud-storage.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-
 	</properties>
 	<dependencies>
 		<dependency>
@@ -42,5 +40,103 @@
 			<artifactId>serviceinterface</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- Required for Function primitives -->
+		<dependency>
+			<groupId>com.google.cloud.functions</groupId>
+			<artifactId>functions-framework-api</artifactId>
+			<version>1.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- The following dependencies are only required for testing -->
+		<dependency>
+			<groupId>com.google.truth</groupId>
+			<artifactId>truth</artifactId>
+			<version>1.0.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-testlib</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Used in ExampleSystemTest -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-pubsub</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-logging</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+
+		<!-- Used in ExampleIntegrationTest (to make POST requests -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.12</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Used in ExampleSystemTest AND ExampleIntegrationTest -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-core</artifactId>
+			<version>1.5.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-retry</artifactId>
+			<version>1.5.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Pre-install the Functions Framework plugin -->
+		<dependency>
+			<groupId>com.google.cloud.functions</groupId>
+			<artifactId>function-maven-plugin</artifactId>
+			<version>0.9.3</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Google Cloud Functions Framework Maven plugin This plugin allows 
+					you to run Cloud Functions Java code locally. Use the following terminal 
+					command to run a given function locally: mvn function:run -Drun.functionTarget=your.package.yourFunction -->
+				<groupId>com.google.cloud.functions</groupId>
+				<artifactId>function-maven-plugin</artifactId>
+				<version>0.9.3</version>
+				<configuration>
+					<functionTarget>functions.HelloPubSub</functionTarget>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!-- version 3.0.0-M4 does not load JUnit5 correctly -->
+				<!-- see https://issues.apache.org/jira/browse/SUREFIRE-1750 -->
+				<version>3.0.0-M5</version>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<skipTests>${skipTests}</skipTests>
+					<reportNameSuffix>sponge_log</reportNameSuffix>
+					<trimStackTrace>false</trimStackTrace>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -1,31 +1,82 @@
 package org.core.api.reader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.core.util.RestApiUtil;
-import org.models.ApiSourceDataModel;
+import org.models.SourceTemplate;
+import org.serviceinterface.IBucketDataStore;
 import org.serviceinterface.IDataCipher;
-import org.serviceinterface.IDataStore;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ApiDataReader {
-	
-	private IDataStore dataStore;
+
+	private IBucketDataStore dataStore;
 	private IDataCipher dataCipher;
 	private RestApiUtil apiUtil = new RestApiUtil();
-	
-	public ApiDataReader(IDataStore dataStore, IDataCipher dataCipher)
-	{
+	private List<Map<String, Object>> responseList = new ArrayList<>();
+
+	public ApiDataReader(IBucketDataStore dataStore, IDataCipher dataCipher) {
 		this.dataCipher = dataCipher;
 		this.dataStore = dataStore;
 	}
-	
-	public void readAndProcessData(ApiSourceDataModel model, Map<String, String> queryParams) throws Exception
-	{
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> readAndProcessData(SourceTemplate model, Map<String, String> queryParams)
+			throws Exception {
+		int objectKeyNameCounter = 1;
+		
 		String response = apiUtil.callGetApi(model.getApiUrl(), queryParams);
+
+		encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier(), response);
 		
-		byte[] encryptedString = dataCipher.encryptData( response);
-		
-		dataStore.storeData(model.getKey(), new String(encryptedString));
-		System.out.println("Stored in S3");
+		if (model.getRule() != null) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> responseObj = objectMapper.readValue(response.getBytes(), Map.class);
+			
+			populateResponse(responseObj, model.getListAttributeNameInResponse(), model.getPrimaryKeyName());
+			
+			Map<String, Object> ruleInput = new HashMap<>();
+			ruleInput.put(model.getRule().getFirstPage(), responseObj.get(model.getRule().getFirstPage()));
+			ruleInput.put(model.getRule().getLastPage(), responseObj.get(model.getRule().getLastPage()));
+			List<String> nextApis = model.getRule().getNextApis(ruleInput, model.getApiUrl());
+
+			System.out.println(nextApis);
+			if (model.getRule().getSelfCall() == Boolean.TRUE) {
+				for(String api:nextApis)
+				{
+					objectKeyNameCounter = objectKeyNameCounter + 1;
+					response = apiUtil.callGetApi(api, queryParams);
+					encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier(), response);
+					responseObj = objectMapper.readValue(response.getBytes(), Map.class);
+					
+					populateResponse(responseObj, model.getListAttributeNameInResponse(), model.getPrimaryKeyName());
+				}
+			}
+		}
+		return responseList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void populateResponse(Map<String, Object> responseObj, String listAttributeNameInResponse,
+			String primaryKeyName) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> data = (List<Map<String, Object>>)responseObj.get(listAttributeNameInResponse);
+		for(Map<String, Object> row:data)
+		{
+			Map<String, Object> primaryKeyData = new HashMap<>();
+			primaryKeyData.put(primaryKeyName, row.get(primaryKeyName));
+			responseList.add(primaryKeyData);
+		}
+	}
+
+	private void encryptAndStore(String objectKeyName, String response) throws Exception
+	{
+		byte[] encryptedString = dataCipher.encryptData(response);
+
+		dataStore.storeData(objectKeyName, new String(encryptedString));
 	}
 }
