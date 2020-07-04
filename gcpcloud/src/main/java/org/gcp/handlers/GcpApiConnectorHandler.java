@@ -5,14 +5,14 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.gcp.handlers.PubSubHandler.PubSubMessage;
+import org.gcp.handlers.GcpApiConnectorHandler.PubSubMessage;
 
 import com.google.cloud.functions.BackgroundFunction;
 import com.google.cloud.functions.Context;
 
 
-public class PubSubHandler implements BackgroundFunction<PubSubMessage> {
-  private static final Logger logger = Logger.getLogger(PubSubHandler.class.getName());
+public class GcpApiConnectorHandler implements BackgroundFunction<PubSubMessage> {
+  private static final Logger logger = Logger.getLogger(GcpApiConnectorHandler.class.getName());
 
   @Override
   public void accept(PubSubMessage message, Context context) {
