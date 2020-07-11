@@ -1,5 +1,9 @@
 package org.gcpcloud;
 
+import org.gcpcloud.impl.GCSDataStore;
+
+import com.google.cloud.storage.Bucket;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,4 +39,9 @@ public class AppTest
     {
         assertTrue( true );
     }
+    
+    public static void main(String[] args) {
+		GCSDataStore store = new GCSDataStore();
+		store.storeData("test-intermediate-store", "portalid/test", "testdata");
+	}
 }

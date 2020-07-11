@@ -29,9 +29,10 @@ public class ApiDataReader {
 		int objectKeyNameCounter = 1;
 
 		String response = apiUtil.callGetApi(model.getApiUrl(), queryParams);
+		long currentTimeStamp = System.nanoTime();
 
 		try {
-			encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier(), response);
+			encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier()+ "_" + currentTimeStamp, response);
 
 			if (model.getRule() != null) {
 				ObjectMapper objectMapper = new ObjectMapper();
@@ -49,7 +50,7 @@ public class ApiDataReader {
 					for (String api : nextApis) {
 						objectKeyNameCounter = objectKeyNameCounter + 1;
 						response = apiUtil.callGetApi(api, queryParams);
-						encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier(), response);
+						encryptAndStore(objectKeyNameCounter + "_" + model.getResourceIdentifier() + "_" + currentTimeStamp, response);
 						responseObj = objectMapper.readValue(response.getBytes(), Map.class);
 
 						populateResponse(responseObj, model.getListAttributeNameInResponse(),

@@ -9,78 +9,42 @@
 		<artifactId>connectors</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>gcpcloud</artifactId>
-	<name>gcpcloud</name>
+	<groupId>edu.sarwesh</groupId>
+	<artifactId>gcprestapis</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>gcprestapis</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.cloud</groupId>
-				<artifactId>libraries-bom</artifactId>
-				<version>5.2.0</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+
 	<dependencies>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-storage</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.11.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-pubsub</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>edu.sarwesh</groupId>
-			<artifactId>serviceinterface</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.5.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.4.13</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- Required for Function primitives -->
 		<dependency>
 			<groupId>com.google.cloud.functions</groupId>
 			<artifactId>functions-framework-api</artifactId>
 			<version>1.0.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.sarwesh</groupId>
+			<artifactId>gcpcloud</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+
 	</dependencies>
 	<build>
-		<finalName>gcpcloud-java11</finalName>
-
 		<plugins>
 			<plugin>
 				<!-- Google Cloud Functions Framework Maven plugin This plugin allows 
@@ -90,22 +54,8 @@
 				<artifactId>function-maven-plugin</artifactId>
 				<version>0.9.3</version>
 				<configuration>
-					<functionTarget>functions.HelloPubSub</functionTarget>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- version 3.0.0-M4 does not load JUnit5 correctly -->
-				<!-- see https://issues.apache.org/jira/browse/SUREFIRE-1750 -->
-				<version>3.0.0-M5</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-					<skipTests>${skipTests}</skipTests>
-					<reportNameSuffix>sponge_log</reportNameSuffix>
-					<trimStackTrace>false</trimStackTrace>
+					<functionTarget>org.gcprestapis.HelloWorld</functionTarget>
+					<functionTarget>org.gcprestapis.WebhookApi</functionTarget>
 				</configuration>
 			</plugin>
 			<plugin>

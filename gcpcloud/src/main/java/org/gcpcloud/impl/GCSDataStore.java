@@ -2,8 +2,6 @@ package org.gcpcloud.impl;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -11,8 +9,6 @@ import java.nio.channels.WritableByteChannel;
 import org.serviceinterface.IBucketDataStore;
 
 import com.google.api.gax.paging.Page;
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Bucket;
@@ -25,7 +21,8 @@ public class GCSDataStore implements IBucketDataStore {
 	private Storage storage;
 
 	public GCSDataStore(){
-		Credentials credentials;
+		storage = StorageOptions.getDefaultInstance().getService();
+		/*Credentials credentials;
 		try {
 			credentials = GoogleCredentials.fromStream(new FileInputStream(System.getenv("AUTH_FILE")));
 			storage = StorageOptions.newBuilder().setCredentials(credentials).setProjectId(System.getenv("GOOGLE_PROJECT")).build().getService();
@@ -35,7 +32,7 @@ public class GCSDataStore implements IBucketDataStore {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void storeData(String bucketName, String key, Object obj) {
@@ -118,6 +115,7 @@ public class GCSDataStore implements IBucketDataStore {
 		// TODO Auto-generated method stub
 		Bucket bucket = storage.create(BucketInfo.of(bucketName + "-" + folderName));
 		System.out.println("Bucket created:" + bucket.getName());
+		//bucket.get(blob, options);
 	}
 
 	@Override
